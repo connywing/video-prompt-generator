@@ -1,0 +1,11 @@
+Use the uploaded image as the fixed character identity reference. The woman's facial features, face shape, eyes, nose, lips, proportions, and exact skin tone must match the reference image precisely and consistently. Do not change her face or identity.
+
+{scene}. Cinematic smartphone-style video, medium close-up framing (from chest to head), subtle front-camera perspective with slight natural wide-angle effect, but not distorted.
+
+Audio style: voice-only recording. Only her spoken {lang} dialogue is audible. No background music, no ambient sound, no environmental noise, and no sound effects. The audio should sound like a simple smartphone recording of someone speaking directly to the camera.
+
+The camera is positioned slightly below her eye level, creating a subtle intimate boyfriend perspective while maintaining selfie realism.
+
+She is saying: "{script}"
+
+Bright natural daylight, clean minimalist interior, realistic skin texture, cinematic smartphone-style look. Smooth camera movement, vibrant colors, 4k.

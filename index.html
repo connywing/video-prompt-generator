@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI视频提示词批量生成器</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>AI视频提示词批量生成器</h1>
+
+        <!-- ====== AI 模型配置 ====== -->
+        <div class="config-section">
+            <div class="config-row">
+                <div class="config-field config-model">
+                    <div class="model-header-row">
+                        <label>AI 模型（用于写作）</label>
+                        <span class="video-model-inline">
+                            <label class="vmi-opt"><input type="radio" name="videoModel" value="veo" checked> Veo</label>
+                            <label class="vmi-opt"><input type="radio" name="videoModel" value="jimeng"> 即梦</label>
+                        </span>
+                    </div>
+                    <select id="aiModel" class="config-select">
+                        <option value="deepseek" selected>DeepSeek</option>
+                        <option value="gpt">GPT</option>
+                        <option value="gemini">Gemini</option>
+                        <option value="glm">GLM</option>
+                        <option value="qwen">Qwen</option>
+                    </select>
+                </div>
+            </div>
+            <div class="config-row">
+                <div class="config-field" style="flex:3;">
+                    <label>API Key</label>
+                    <div class="api-key-row">
+                        <input type="password" id="apiKey" placeholder="输入你的 API Key" class="api-key-input">
+                        <label class="show-key-label"><input type="checkbox" onchange="toggleKeyVisibility(this)"> 显示</label>
+                    </div>
+                </div>
+            </div>
+
+
+            <details class="advanced-details">
+                <summary>高级设置（自定义模型 + Base URL）</summary>
+                <div class="advanced-body">
+                    <div class="adv-row">
+                        <div class="adv-field">
+                            <label>自定义模型名（留空使用默认）</label>
+                            <input type="text" id="customModel" placeholder="例: gpt-4o / deepseek-chat">
+                        </div>
+                        <div class="adv-field">
+                            <label>Base URL（兼容 OpenAI 格式）</label>
+                            <input type="text" id="customBaseUrl" placeholder="例: http://localhost:11434/v1">
+                        </div>
+                    </div>
+                    <p class="hint">默认映射: DeepSeek→deepseek-chat, GPT→gpt-4.1-mini, Gemini→gemini-2.0-flash, GLM→glm-4-flash, Qwen→qwen-turbo</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- ====== 镜头参数 + 输出数量 ====== -->
+        <div class="config-section">
+            <div class="kpi-row">
+                <div class="kpi-field" style="flex:2;">
+                    <label for="cameraSpec">镜头 / 角度 / 构图规定</label>
+                    <input type="text" id="cameraSpec" placeholder="例：中景镜头，相机略低于视线，轻微广角，男朋友视角">
+                </div>
+                <div class="kpi-field" style="flex:0 0 120px;">
+                    <label for="outputCount">每组输出数量</label>
+                    <div class="output-count-wrap">
+                        <input type="number" id="outputCount" value="1" min="1" max="10" class="count-input">
+                        <span class="count-label">1–10</span>
+                    </div>
+                </div>
+            </div>
+            <!-- 创意参数（可选，折叠） -->
+            <details class="creative-details">
+                <summary>创意参数（可选）</summary>
+                <div class="creative-body">
+                    <div class="kpi-row">
+                        <div class="kpi-field">
+                            <label for="sceneMood">场景氛围</label>
+                            <input type="text" id="sceneMood" placeholder="例：温馨明亮 / 暗调高级 / 自然清新">
+                        </div>
+                        <div class="kpi-field">
+                            <label for="styleTone">风格基调</label>
+                            <input type="text" id="styleTone" placeholder="例：轻松活泼 / 专业权威">
+                        </div>
+                        <div class="kpi-field">
+                            <label for="keyMessage">关键信息</label>
+                            <input type="text" id="keyMessage" placeholder="例：产品核心卖点">
+                        </div>
+                    </div>
+                </div>
+            </details>
+        </div>
+
+        <!-- ====== 垫图设置 ====== -->
+        <div class="config-section ref-section">
+            <div class="ref-toggle-row">
+                <label class="ref-main-toggle">
+                    <input type="checkbox" id="referenceImage" onchange="toggleRefMode()"> 需要垫图模式
+                </label>
+                <div class="ref-sub-options" id="refOptions" style="display:none;">
+                    <label class="ref-radio">
+                        <input type="radio" name="refMode" value="match" checked onchange="toggleRefSubMode()"> 人物与垫图一致，无需描写
+                    </label>
+                    <label class="ref-radio">
+                        <input type="radio" name="refMode" value="custom" onchange="toggleRefSubMode()"> 垫图基础上修改
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== 人物库 ====== -->
+        <div class="batch-section">
+            <div class="section-header">
+                <h2>人物库</h2>
+                <span class="row-count" id="charCount">1 组</span>
+            </div>
+            <p class="section-desc">每一组 = 一个角色 + 一种场景，会与所有文案组合。</p>
+            <div id="character-rows"></div>
+            <button class="add-row-btn" onclick="addCharacterRow()">+ 添加人物</button>
+        </div>
+
+        <!-- ====== 文案库 ====== -->
+        <div class="batch-section">
+            <div class="section-header">
+                <h2>文案库</h2>
+                <span class="row-count" id="scriptCount">1 组</span>
+            </div>
+            <p class="section-desc">每一条文案会与所有人物的特征交叉组合。</p>
+            <div id="script-rows"></div>
+            <button class="add-row-btn" onclick="addScriptRow()">+ 添加文案</button>
+        </div>
+
+        <button id="generateBtn" onclick="batchGenerate()">🚀 批量生成提示词</button>
+
+        <!-- ====== 进度条 + 中止按钮 ====== -->
+        <div id="progress-area" style="display:none;">
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+            </div>
+            <div class="progress-footer">
+                <span class="progress-text" id="progressText">准备中...</span>
+                <button id="abortBtn" class="abort-btn" onclick="abortGeneration()">⛔ 中止</button>
+            </div>
+        </div>
+
+        <!-- ====== 结果 ====== -->
+        <div id="result-area" style="display:none;">
+            <div class="result-header-bar">
+                <h2>生成结果</h2>
+                <div class="result-actions">
+                    <span id="resultCount" class="result-count"></span>
+                    <button class="copy-btn-small" onclick="copyAllResults()">复制全部</button>
+                    <button class="copy-btn-small" onclick="exportCSV()">导出 CSV</button>
+                </div>
+            </div>
+            <div class="results-table-wrap">
+                <table class="results-table" id="results-table">
+                    <thead>
+                        <tr>
+                            <th class="col-num">#</th>
+                            <th class="col-char">角色</th>
+                            <th class="col-script">文案</th>
+                            <th class="col-model">视频模型</th>
+                            <th class="col-seg">段</th>
+                            <th class="col-var">变体</th>
+                            <th class="col-prompt">AI 生成的提示词</th>
+                            <th class="col-copy">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="error-toast" class="error-toast" style="display:none;"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
