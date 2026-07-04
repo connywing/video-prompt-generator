@@ -113,11 +113,18 @@ h2 { font-size: 15px; color: #333; margin: 0; }
 .vmi-opt {
     display: flex;
     align-items: center;
-    gap: 3px;
+    gap: 4px;
     font-size: 13px;
     font-weight: 500;
     cursor: pointer;
     white-space: nowrap;
+    line-height: 1;
+}
+
+.vmi-opt input[type="radio"] {
+    margin: 0;
+    vertical-align: middle;
+    flex-shrink: 0;
 }
 
 .config-model select { width: 180px; }
@@ -224,16 +231,17 @@ h2 { font-size: 15px; color: #333; margin: 0; }
 }
 
 /* 输出数量 */
-.output-count-wrap { display: flex; align-items: center; gap: 6px; }
+.output-count-wrap { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
 
 .count-input {
-    width: 60px;
+    width: 52px;
     text-align: center;
     font-size: 14px;
     font-weight: 700;
+    flex-shrink: 0;
 }
 
-.count-label { font-size: 11px; color: #888; }
+.count-label { font-size: 11px; color: #888; white-space: nowrap; }
 
 /* ---- 垫图 ---- */
 .ref-section {

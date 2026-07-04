@@ -160,7 +160,7 @@ function addScriptRow(label, text) {
         +'<option value="th">ไทย</option>'
         +'<option value="id">Bahasa Indonesia</option>'
         +'</select></div>'
-        +'<div class="brf-script"><label>文案内容</label><textarea class="script-text" rows="3" placeholder="粘贴口播文案 / 脚本……">'+escHtml(text||'')+'</textarea></div>'
+        +'<div class="brf-script"><label>文案内容</label><textarea class="script-text" rows="4" placeholder="粘贴口播文案 / 脚本……">'+escHtml(text||'')+'</textarea></div>'
         +'<button class="remove-btn" onclick="removeScriptRow('+id+')" title="删除">✕</button>'
         +'</div>';
     document.getElementById('script-rows').appendChild(div);
