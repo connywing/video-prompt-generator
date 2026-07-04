@@ -1,2 +1,5 @@
+node_modules/
+.wrangler/
+wrangler.jsonc
 .DS_Store
 *.log
